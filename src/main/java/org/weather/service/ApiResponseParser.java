@@ -2,18 +2,22 @@ package org.weather.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.weather.config.ApiResponceParserConfig;
 import org.weather.model.Forecasts;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 
 public class ApiResponseParser {
-    public ApiResponseParser() {
+    ObjectMapper objectMapper;
+
+    public ApiResponseParser(ApiResponceParserConfig config) {
+        objectMapper = config.objectMapper;
     }
 
-    public List<Forecasts> parseWeather(String str, ObjectMapper objectMapper) throws JsonProcessingException {
-        str = findForecast(str);
+    public List<Forecasts> parseWeather(HttpResponse<String> response) throws JsonProcessingException {
+        String str = findForecast(response.body());
         return objectMapper.readValue(str, new TypeReference<>() {
         });
     }

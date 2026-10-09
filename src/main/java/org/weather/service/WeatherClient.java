@@ -1,30 +1,27 @@
 package org.weather.service;
 
+import org.weather.config.WeatherClientConfig;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Properties;
-
-import static org.weather.Main.properties;
 
 public class WeatherClient {
     HttpClient client;
+    private final String API_SECRET_KEY;
+    private final String WEATHER_FORECAST_API_URL;
+    private final URI uri;
 
-    private WeatherClient() {
-        client = HttpClient.newHttpClient();
-    }
-
-    private static final WeatherClient INSTANCE = new WeatherClient();
-
-    public static WeatherClient getInstance() {
-        return INSTANCE;
+    public WeatherClient(WeatherClientConfig config) {
+        client = config.client;
+        API_SECRET_KEY = config.API_SECRET_KEY;
+        WEATHER_FORECAST_API_URL = config.WEATHER_FORECAST_API_URL;
+        uri = buildForecastURI(59.9386, 30.3141, "ru_RU", 3);
     }
 
     public HttpResponse<String> getForecast() throws IOException, InterruptedException {
-        URI uri = buildForecastURI(WEATHER_FORECAST_API_URL, 59.9386, 30.3141, "ru_RU", 3);
-        String API_SECRET_KEY = System.getenv("API_SECRET_KEY");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .header("X-Yandex-Weather-Key", API_SECRET_KEY)
@@ -33,24 +30,23 @@ public class WeatherClient {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() >= 400) {
+            if (response.statusCode() > 200) {
                 throw new RuntimeException("HTTP Error: " + response.statusCode());
             }
 
             return response;
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             throw e;
         }
     }
 
-    private static final String WEATHER_FORECAST_API_URL = properties.getProperty("yandex.weather.host");
-
-    public URI buildForecastURI(String WEATHER_API_URL, double lat, double lon, String lang, int days) {
+    private URI buildForecastURI(double lat, double lon, String lang, int days) {
 
         var uri = URI.create(
-                WEATHER_API_URL
-                        + "?lat=" + lat // может быть прикол с форматом, кстати
+                WEATHER_FORECAST_API_URL
+                        + "/v2/forecast"
+                        + "?lat=" + lat
                         + "&lon=" + lon
                         + "&lang=" + lang
                         + "&limit=" + days
