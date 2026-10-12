@@ -14,10 +14,10 @@ public class WeatherClient {
     private final String WEATHER_FORECAST_API_URL;
     private final URI uri;
 
-    public WeatherClient(WeatherClientConfig config) {
-        client = config.client;
-        API_SECRET_KEY = config.API_SECRET_KEY;
-        WEATHER_FORECAST_API_URL = config.WEATHER_FORECAST_API_URL;
+    public WeatherClient(WeatherClientConfig config, HttpClient client) {
+        this.client = client;
+        API_SECRET_KEY = config.apiSecretKey;
+        WEATHER_FORECAST_API_URL = config.weatherForecastApiUrl;
         uri = buildForecastURI(59.9386, 30.3141, "ru_RU", 3);
     }
 

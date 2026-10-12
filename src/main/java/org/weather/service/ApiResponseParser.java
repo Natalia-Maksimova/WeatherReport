@@ -3,7 +3,7 @@ package org.weather.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.weather.config.ApiResponceParserConfig;
+import org.weather.config.ApiResponseParserConfig;
 import org.weather.model.Forecasts;
 
 import java.net.http.HttpResponse;
@@ -12,7 +12,7 @@ import java.util.List;
 public class ApiResponseParser {
     ObjectMapper objectMapper;
 
-    public ApiResponseParser(ApiResponceParserConfig config) {
+    public ApiResponseParser(ApiResponseParserConfig config) {
         objectMapper = config.objectMapper;
     }
 

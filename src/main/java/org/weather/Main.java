@@ -1,6 +1,6 @@
 package org.weather;
 
-import org.weather.config.ApiResponceParserConfig;
+import org.weather.config.ApiResponseParserConfig;
 import org.weather.config.WeatherClientConfig;
 import org.weather.service.ApiResponseParser;
 import org.weather.service.ForecastProvider;
@@ -10,6 +10,7 @@ import org.weather.ui.ConsoleWriter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.util.Properties;
 
 public class Main {
@@ -19,11 +20,13 @@ public class Main {
         FileInputStream fileInputStream = new FileInputStream("src/main/java/org/weather/config.properties");
         properties.load(fileInputStream);
 
-        WeatherClientConfig weatherClientConfig = new WeatherClientConfig(properties);
-        WeatherClient weatherClient = new WeatherClient(weatherClientConfig);
+        HttpClient client = HttpClient.newHttpClient();
 
-        ApiResponceParserConfig apiResponceParserConfig = new ApiResponceParserConfig();
-        ApiResponseParser parser = new ApiResponseParser(apiResponceParserConfig);
+        WeatherClientConfig weatherClientConfig = new WeatherClientConfig(properties);
+        WeatherClient weatherClient = new WeatherClient(weatherClientConfig, client);
+
+        ApiResponseParserConfig apiResponseParserConfig = new ApiResponseParserConfig();
+        ApiResponseParser parser = new ApiResponseParser(apiResponseParserConfig);
 
         ForecastProvider forecastProvider = new ForecastProvider(parser, weatherClient);
 

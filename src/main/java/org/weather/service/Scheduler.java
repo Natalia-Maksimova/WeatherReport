@@ -14,9 +14,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Scheduler {
+    static final long period = 86400000;
+
     public static void scheduleNotification(Properties properties, ForecastProvider forecastProvider) {
         long initialDelay = calculateDelay(properties);
-        long period = 86400000;
+
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -36,9 +38,20 @@ public class Scheduler {
     private static long calculateDelay(Properties properties) {
         ZoneId moscowZone = ZoneId.of("Europe/Moscow");
         ZonedDateTime now = ZonedDateTime.now(moscowZone);
+        int hour;
+        int minute;
 
-        int hour = Integer.parseInt(properties.getProperty("time.notificationHour"));
-        int minute = Integer.parseInt(properties.getProperty("time.notificationMinute"));
+        try {
+            hour = Integer.parseInt(properties.getProperty("time.notificationHour"));
+        } catch (NumberFormatException e) {
+            hour = 8;
+        }
+
+        try {
+            minute = Integer.parseInt(properties.getProperty("time.notificationMinute"));
+        } catch (NumberFormatException e) {
+            minute = 0;
+        }
 
         ZonedDateTime target = now.with(LocalTime.of(hour, minute, 0));
 
